@@ -99,8 +99,8 @@ Kedua peran ini masuk lewat halaman login yang sama — sistem akan otomatis men
 ## 📁 Struktur Proyek
 
 ```
-cbi/
-├── hr-backend/                 # Laravel API
+cbi-test/
+├── backend/                 # Laravel API
 │   ├── app/
 │   │   ├── Enums/              # Enum classes (Gender, UserRole, LeaveType, dll.)
 │   │   ├── Http/
@@ -117,7 +117,7 @@ cbi/
 │   │   └── api.php             # 35 endpoint API
 │   └── .env                    # Konfigurasi environment
 │
-├── hr-frontend/                # React SPA
+├── frontend/                # React SPA
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── layout/         # AppLayout (sidebar + navbar responsif)
@@ -135,8 +135,6 @@ cbi/
 │   │   └── App.jsx             # Router utama
 │   └── .env                    # VITE_API_URL
 │
-├── PRD_HR_System.md            # Dokumen Product Requirements
-├── Task_List_HR_System.md      # Daftar task pengerjaan
 └── README.md                   # Dokumentasi ini
 ```
 
@@ -171,7 +169,7 @@ CREATE DATABASE hris CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 ```bash
 # Masuk ke folder backend
-cd hr-backend
+cd backend
 
 # Install dependency PHP
 composer install
@@ -223,7 +221,7 @@ Kalau semua lancar, kamu akan punya:
 
 ```bash
 # Masuk ke folder frontend
-cd hr-frontend
+cd frontend
 
 # Install dependency Node.js
 npm install
@@ -246,7 +244,7 @@ Kamu perlu membuka **3 terminal** secara bersamaan — dua untuk backend (Server
 ### Terminal 1: Backend (Laravel)
 
 ```bash
-cd hr-backend
+cd backend
 php artisan serve
 ```
 
@@ -255,7 +253,7 @@ Backend akan berjalan di: **http://localhost:8000**
 ### Terminal 2: Frontend (React)
 
 ```bash
-cd hr-frontend
+cd frontend
 npm run dev
 ```
 
@@ -264,7 +262,7 @@ Frontend akan berjalan di: **http://localhost:5173**
 ### Terminal 3: Server WebSocket (Laravel Reverb)
 
 ```bash
-cd hr-backend
+cd backend
 php artisan reverb:start
 ```
 
@@ -622,7 +620,7 @@ Access to XMLHttpRequest at 'http://localhost:8000/api/...' has been blocked by 
 ### Mau reset semua data dari awal
 
 ```bash
-cd hr-backend
+cd backend
 php artisan migrate:fresh --seed
 ```
 
