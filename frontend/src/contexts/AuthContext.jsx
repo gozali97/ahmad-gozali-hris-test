@@ -17,6 +17,17 @@ export function AuthProvider({ children }) {
     if (token && savedUser) {
       try {
         setUser(JSON.parse(savedUser))
+
+        authService.getCurrentUser().then(res => {
+          if (res.success && res.data) {
+            setUser(res.data)
+            localStorage.setItem('auth_user', JSON.stringify(res.data))
+          }
+        }).catch(() => {
+          localStorage.removeItem('auth_token')
+          localStorage.removeItem('auth_user')
+          setUser(null)
+        })
       } catch {
         localStorage.removeItem('auth_token')
         localStorage.removeItem('auth_user')

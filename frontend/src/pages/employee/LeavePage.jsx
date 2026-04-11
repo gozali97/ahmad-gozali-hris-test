@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
+import echo from '@/services/echo'
 import { Plus, CalendarDays, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
@@ -39,7 +40,22 @@ export function EmployeeLeavePage() {
     }
   }, [page])
 
-  useEffect(() => { fetchLeaves() }, [fetchLeaves])
+  useEffect(() => {
+    fetchLeaves()
+    
+    if (user?.id) {
+      const channel = echo.channel(`employee-notifications.${user.id}`)
+      channel.listen('.LeaveStatusUpdated', (e) => {
+        toast.info(`Status pengajuan cuti Anda telah ${e.leave?.status === 'approved' ? 'Disetujui' : 'Ditolak'}`)
+        fetchLeaves()
+      })
+
+      return () => {
+        channel.stopListening('.LeaveStatusUpdated')
+        echo.leaveChannel(`employee-notifications.${user.id}`)
+      }
+    }
+  }, [fetchLeaves, user?.id])
 
   const totalDays = form.start_date && form.end_date
     ? Math.max(0, differenceInDays(parseISO(form.end_date), parseISO(form.start_date)) + 1)

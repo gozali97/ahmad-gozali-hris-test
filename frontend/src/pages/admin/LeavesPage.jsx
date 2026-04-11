@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
+import echo from '@/services/echo'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -42,7 +43,21 @@ export function LeavesPage() {
     }
   }, [page, statusFilter, activeTab])
 
-  useEffect(() => { fetchLeaves() }, [fetchLeaves])
+  useEffect(() => {
+    fetchLeaves()
+    
+    // Listen for new leave requests in real-time via Reverb
+    const channel = echo.channel('admin-notifications')
+    channel.listen('.LeaveRequested', (e) => {
+      toast.info(`Pengajuan cuti baru dari ${e.leave?.user?.name || 'Karyawan'}`)
+      fetchLeaves() // Reload data saat ada cuti baru
+    })
+
+    return () => {
+      channel.stopListening('.LeaveRequested')
+      echo.leaveChannel('admin-notifications')
+    }
+  }, [fetchLeaves])
 
   const openDetail = (leave) => { setDetailItem(leave); setAdminNotes(''); setDialogOpen(true) }
 

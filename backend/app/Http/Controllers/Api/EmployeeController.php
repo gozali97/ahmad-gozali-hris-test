@@ -46,6 +46,25 @@ class EmployeeController extends Controller
         ]);
     }
 
+    public function generateNip(): JsonResponse
+    {
+        $lastEmployee = User::where('role', UserRole::Employee)
+            ->whereNotNull('nip')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if (! $lastEmployee) {
+            $nextNip = 'EMP0001';
+        } else {
+            // Extract numeric part from last NIP (e.g., EMP0012 -> 0012)
+            $lastNumber = (int) substr($lastEmployee->nip, 3);
+            $nextNumber = $lastNumber + 1;
+            $nextNip = 'EMP' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        }
+
+        return $this->successResponse(['nip' => $nextNip], 'NIP berhasil digenerate.');
+    }
+
     public function store(StoreEmployeeRequest $request): JsonResponse
     {
         $data = $request->validated();

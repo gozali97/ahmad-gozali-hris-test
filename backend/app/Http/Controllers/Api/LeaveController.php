@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Leave\ProcessLeaveRequest;
 use App\Http\Requests\Leave\StoreLeaveRequest;
 use App\Http\Resources\LeaveResource;
+use App\Events\LeaveRequested;
+use App\Events\LeaveStatusUpdated;
 use App\Models\Leave;
 use App\Traits\ApiResponse;
 use Carbon\Carbon;
@@ -84,7 +86,10 @@ class LeaveController extends Controller
             'status'     => LeaveStatus::Pending,
         ]);
 
-        return $this->createdResponse(new LeaveResource($leave->load('user')), 'Pengajuan cuti berhasil dikirim.');
+        $leave->load('user');
+        broadcast(new LeaveRequested($leave))->toOthers();
+
+        return $this->createdResponse(new LeaveResource($leave), 'Pengajuan cuti berhasil dikirim.');
     }
 
     public function show(Leave $leave): JsonResponse
@@ -112,7 +117,10 @@ class LeaveController extends Controller
             $leave->user->decrement('leave_quota', $leave->total_days);
         }
 
-        return $this->successResponse(new LeaveResource($leave->fresh()->load(['user', 'approvedBy'])), 'Cuti berhasil disetujui.');
+        $updatedLeave = $leave->fresh()->load(['user', 'approvedBy']);
+        broadcast(new LeaveStatusUpdated($updatedLeave))->toOthers();
+
+        return $this->successResponse(new LeaveResource($updatedLeave), 'Cuti berhasil disetujui.');
     }
 
     public function reject(ProcessLeaveRequest $request, Leave $leave): JsonResponse
@@ -128,6 +136,9 @@ class LeaveController extends Controller
             'processed_at' => Carbon::now(),
         ]);
 
-        return $this->successResponse(new LeaveResource($leave->fresh()->load(['user', 'approvedBy'])), 'Cuti berhasil ditolak.');
+        $updatedLeave = $leave->fresh()->load(['user', 'approvedBy']);
+        broadcast(new LeaveStatusUpdated($updatedLeave))->toOthers();
+
+        return $this->successResponse(new LeaveResource($updatedLeave), 'Cuti berhasil ditolak.');
     }
 }

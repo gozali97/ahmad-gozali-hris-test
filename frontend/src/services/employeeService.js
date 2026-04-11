@@ -11,6 +11,11 @@ export const employeeService = {
     return response.data
   },
 
+  async generateNip() {
+    const response = await api.get('/employees/generate-nip')
+    return response.data
+  },
+
   async create(formData) {
     const response = await api.post('/employees', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },

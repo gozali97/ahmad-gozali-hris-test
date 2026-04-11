@@ -45,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin')->group(function () {
 
         // Employees
+        Route::get('/employees/generate-nip', [EmployeeController::class, 'generateNip']);
         Route::apiResource('employees', EmployeeController::class);
 
         // Positions
