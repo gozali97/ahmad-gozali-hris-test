@@ -21,15 +21,15 @@ class EmployeeResource extends JsonResource
             'gender_label'  => $this->gender?->label(),
             'position_id'   => $this->position_id,
             'department_id' => $this->department_id,
-            'position'      => $this->whenLoaded('position', fn() => [
+            'position'      => $this->whenLoaded('position', fn() => $this->position ? [
                 'id'   => $this->position->id,
                 'name' => $this->position->name,
-            ]),
-            'department'    => $this->whenLoaded('department', fn() => [
+            ] : null),
+            'department'    => $this->whenLoaded('department', fn() => $this->department ? [
                 'id'   => $this->department->id,
                 'name' => $this->department->name,
                 'code' => $this->department->code,
-            ]),
+            ] : null),
             'join_date'     => $this->join_date?->format('Y-m-d'),
             'status'        => $this->status?->value,
             'status_label'  => $this->status?->label(),
@@ -37,6 +37,7 @@ class EmployeeResource extends JsonResource
             'photo_url'     => $this->photo_url,
             'leave_quota'   => $this->leave_quota,
             'role'          => $this->role?->value,
+            'permissions'   => $this->effectivePermissions(),
             'created_at'    => $this->created_at?->toISOString(),
         ];
     }

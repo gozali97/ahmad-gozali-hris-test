@@ -83,6 +83,7 @@ class EmployeeController extends Controller
 
     public function show(User $employee): JsonResponse
     {
+        abort_unless($employee->isEmployee(), 404);
         $employee->load(['position', 'department']);
 
         return $this->successResponse(new EmployeeResource($employee), 'Detail karyawan berhasil diambil.');
@@ -90,6 +91,7 @@ class EmployeeController extends Controller
 
     public function update(UpdateEmployeeRequest $request, User $employee): JsonResponse
     {
+        abort_unless($employee->isEmployee(), 404);
         $data = $request->validated();
 
         if (! empty($data['password'])) {
@@ -105,7 +107,9 @@ class EmployeeController extends Controller
             $data['photo'] = $request->file('photo')->store('photos', 'public');
         }
 
+        $revoke = !empty($data['password']) || ($data['status'] ?? $employee->status->value) !== $employee->status->value || $data['email'] !== $employee->email;
         $employee->update($data);
+        if ($revoke) $employee->tokens()->delete();
         $employee->load(['position', 'department']);
 
         return $this->successResponse(new EmployeeResource($employee), 'Data karyawan berhasil diperbarui.');
@@ -113,6 +117,7 @@ class EmployeeController extends Controller
 
     public function destroy(User $employee): JsonResponse
     {
+        abort_unless($employee->isEmployee(), 404);
         if ($employee->photo) {
             Storage::disk('public')->delete($employee->photo);
         }

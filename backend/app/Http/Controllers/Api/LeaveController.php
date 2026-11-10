@@ -94,6 +94,7 @@ class LeaveController extends Controller
 
     public function show(Leave $leave): JsonResponse
     {
+        abort_if(request()->user()->isEmployee() && $leave->user_id !== request()->user()->id, 403);
         $leave->load(['user', 'approvedBy']);
 
         return $this->successResponse(new LeaveResource($leave), 'Detail cuti berhasil diambil.');

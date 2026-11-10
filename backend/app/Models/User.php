@@ -32,6 +32,7 @@ class User extends Authenticatable
         'photo',
         'leave_quota',
         'role',
+        'permissions',
     ];
 
     protected $hidden = [
@@ -44,12 +45,24 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
+            'permissions'       => 'array',
             'birth_date'        => 'date',
             'join_date'         => 'date',
             'gender'            => Gender::class,
             'status'            => UserStatus::class,
             'role'              => UserRole::class,
         ];
+    }
+
+    public function effectivePermissions(): array
+    {
+        if (!$this->isAdmin()) return [];
+        return $this->permissions ?? array_keys(\App\Support\Permissions::LABELS);
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        return $this->isAdmin() && in_array($permission, $this->effectivePermissions(), true);
     }
 
     // Relationships

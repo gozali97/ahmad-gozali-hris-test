@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,7 +57,7 @@ export function LoginPage() {
           </div>
           <div>
             <h1 className="text-base font-bold text-foreground leading-tight">
-              HR System
+              HRIS
             </h1>
             <p className="text-xs text-muted-foreground">
               Human Resource Management
@@ -82,6 +82,7 @@ export function LoginPage() {
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                   <Input
+                    autoComplete="username"
                     id="email"
                     type="email"
                     placeholder="nama@email.com"
@@ -103,6 +104,7 @@ export function LoginPage() {
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                   <Input
+                    autoComplete="current-password"
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
@@ -113,6 +115,7 @@ export function LoginPage() {
                   />
                   <button
                     type="button"
+                    aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
@@ -144,37 +147,9 @@ export function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-4 pt-4 border-t border-border">
-              <p className="text-xs text-muted-foreground mb-2">Akun Demo</p>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail("admin@hrsystem.com");
-                    setPassword("password");
-                  }}
-                  className="text-xs bg-muted hover:bg-accent text-left rounded-md p-2.5 transition-colors border border-border"
-                >
-                  <p className="font-medium text-foreground">Admin HR</p>
-                  <p className="text-muted-foreground truncate">
-                    admin@hrsystem.com
-                  </p>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail("budi@hrsystem.com");
-                    setPassword("password");
-                  }}
-                  className="text-xs bg-muted hover:bg-accent text-left rounded-md p-2.5 transition-colors border border-border"
-                >
-                  <p className="font-medium text-foreground">Karyawan</p>
-                  <p className="text-muted-foreground truncate">
-                    budi@hrsystem.com
-                  </p>
-                </button>
-              </div>
-            </div>
+            <p className="mt-5 text-center text-xs text-muted-foreground">
+              <Link to="/" className="hover:text-primary underline underline-offset-4">Kembali ke beranda</Link>
+            </p>
           </CardContent>
         </Card>
       </div>
